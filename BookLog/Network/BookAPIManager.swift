@@ -11,7 +11,7 @@ import Alamofire
 class BookAPIManager{
     
     static let shared = BookAPIManager()
-    let REST_API_KEY = ""
+    let REST_API_KEY = Bundle.main.apiKey
     
     private init(){}
     
@@ -21,6 +21,19 @@ class BookAPIManager{
         let headers : HTTPHeaders = [
             "Authorization" : "KakaoAK \(REST_API_KEY)"
         ]
+        
+        let parameters : [String: String] = [
+            "query": esearchText
+        ]
+        
+        AF.request(url, method: .get, parameters: parameters, headers: headers).validate().responseDecodable(of: SearchBookModel.self) { response in
+            switch response.result{
+            case .success(let value):
+                completion(.success(value))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
     
 }
