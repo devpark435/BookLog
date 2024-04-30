@@ -13,6 +13,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = .red
+        
+        BookAPIManager.shared.searchBookData(esearchText: "세이노") { result in
+            switch result{
+            case .success(let value):
+                print(value)
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 
 

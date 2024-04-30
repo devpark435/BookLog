@@ -12,6 +12,12 @@
 		B5A97CEE2BE140F600733884 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97CED2BE140F600733884 /* ViewController.swift */; };
 		B5A97CF42BE140F600733884 /* BookLog.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5A97CF22BE140F600733884 /* BookLog.xcdatamodeld */; };
 		B5A97CF62BE140F700733884 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5A97CF52BE140F700733884 /* Assets.xcassets */; };
+		B5A97D022BE14A0200733884 /* BookAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D012BE14A0200733884 /* BookAPIManager.swift */; };
+		B5A97D052BE14A6A00733884 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B5A97D042BE14A6A00733884 /* Alamofire */; };
+		B5A97D072BE14A6A00733884 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = B5A97D062BE14A6A00733884 /* AlamofireDynamic */; };
+		B5A97D0A2BE14C3D00733884 /* SearchBookModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D092BE14C3D00733884 /* SearchBookModel.swift */; };
+		B5A97D0C2BE1518000733884 /* KakaoPlist.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5A97D0B2BE1518000733884 /* KakaoPlist.plist */; };
+		B5A97D0E2BE1525400733884 /* KakaoAPI++Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +28,10 @@
 		B5A97CF32BE140F600733884 /* BookLog.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BookLog.xcdatamodel; sourceTree = "<group>"; };
 		B5A97CF52BE140F700733884 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B5A97CFA2BE140F700733884 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5A97D012BE14A0200733884 /* BookAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookAPIManager.swift; sourceTree = "<group>"; };
+		B5A97D092BE14C3D00733884 /* SearchBookModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBookModel.swift; sourceTree = "<group>"; };
+		B5A97D0B2BE1518000733884 /* KakaoPlist.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KakaoPlist.plist; sourceTree = "<group>"; };
+		B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KakaoAPI++Bundle.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +39,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A97D052BE14A6A00733884 /* Alamofire in Frameworks */,
+				B5A97D072BE14A6A00733884 /* AlamofireDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,14 +66,42 @@
 		B5A97CE82BE140F600733884 /* BookLog */ = {
 			isa = PBXGroup;
 			children = (
+				B5A97D0F2BE1530900733884 /* Resource */,
+				B5A97D082BE14C2800733884 /* Model */,
+				B5A97D002BE149D200733884 /* Network */,
 				B5A97CE92BE140F600733884 /* AppDelegate.swift */,
 				B5A97CEB2BE140F600733884 /* SceneDelegate.swift */,
 				B5A97CED2BE140F600733884 /* ViewController.swift */,
-				B5A97CF52BE140F700733884 /* Assets.xcassets */,
-				B5A97CFA2BE140F700733884 /* Info.plist */,
 				B5A97CF22BE140F600733884 /* BookLog.xcdatamodeld */,
 			);
 			path = BookLog;
+			sourceTree = "<group>";
+		};
+		B5A97D002BE149D200733884 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D012BE14A0200733884 /* BookAPIManager.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		B5A97D082BE14C2800733884 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D092BE14C3D00733884 /* SearchBookModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		B5A97D0F2BE1530900733884 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97CF52BE140F700733884 /* Assets.xcassets */,
+				B5A97CFA2BE140F700733884 /* Info.plist */,
+				B5A97D0B2BE1518000733884 /* KakaoPlist.plist */,
+				B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -80,6 +120,10 @@
 			dependencies = (
 			);
 			name = BookLog;
+			packageProductDependencies = (
+				B5A97D042BE14A6A00733884 /* Alamofire */,
+				B5A97D062BE14A6A00733884 /* AlamofireDynamic */,
+			);
 			productName = BookLog;
 			productReference = B5A97CE62BE140F600733884 /* BookLog.app */;
 			productType = "com.apple.product-type.application";
@@ -108,6 +152,9 @@
 				Base,
 			);
 			mainGroup = B5A97CDD2BE140F600733884;
+			packageReferences = (
+				B5A97D032BE14A6A00733884 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = B5A97CE72BE140F600733884 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -123,6 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5A97CF62BE140F700733884 /* Assets.xcassets in Resources */,
+				B5A97D0C2BE1518000733884 /* KakaoPlist.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,9 +181,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A97D0E2BE1525400733884 /* KakaoAPI++Bundle.swift in Sources */,
 				B5A97CEE2BE140F600733884 /* ViewController.swift in Sources */,
+				B5A97D022BE14A0200733884 /* BookAPIManager.swift in Sources */,
 				B5A97CF42BE140F600733884 /* BookLog.xcdatamodeld in Sources */,
 				B5A97CEA2BE140F600733884 /* AppDelegate.swift in Sources */,
+				B5A97D0A2BE14C3D00733884 /* SearchBookModel.swift in Sources */,
 				B5A97CEC2BE140F600733884 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,7 +322,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8B78U37C85;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BookLog/Info.plist;
+				INFOPLIST_FILE = BookLog/Resource/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
@@ -300,7 +351,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8B78U37C85;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BookLog/Info.plist;
+				INFOPLIST_FILE = BookLog/Resource/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
@@ -342,6 +393,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B5A97D032BE14A6A00733884 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.9.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B5A97D042BE14A6A00733884 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5A97D032BE14A6A00733884 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		B5A97D062BE14A6A00733884 /* AlamofireDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5A97D032BE14A6A00733884 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = AlamofireDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B5A97CF22BE140F600733884 /* BookLog.xcdatamodeld */ = {
