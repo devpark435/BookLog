@@ -17,6 +17,9 @@ class SearchViewController: UIViewController{
         $0.obscuresBackgroundDuringPresentation = true
     }
     
+    var pageAble: Meta?
+    var searchBookModel: [Book] = []
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -26,6 +29,7 @@ class SearchViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray
+        searchController.searchResultsUpdater = self
         setupNavigation()
     }
     
@@ -60,3 +64,22 @@ class SearchViewController: UIViewController{
     }
     
 }
+
+extension SearchViewController: UISearchResultsUpdating{
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        BookAPIManager.shared.searchBookData(esearchText: searchText) { result in
+            switch result{
+            case .success(let value):
+                print("Get Search Book Data")
+                self.pageAble = value.meta
+                self.searchBookModel = value.documents
+                print(self.searchBookModel.count)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        print("searching...\(searchText)")
+    }
+}
+
