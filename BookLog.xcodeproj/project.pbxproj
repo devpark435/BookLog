@@ -18,6 +18,9 @@
 		B5A97D0A2BE14C3D00733884 /* SearchBookModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D092BE14C3D00733884 /* SearchBookModel.swift */; };
 		B5A97D0C2BE1518000733884 /* KakaoPlist.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5A97D0B2BE1518000733884 /* KakaoPlist.plist */; };
 		B5A97D0E2BE1525400733884 /* KakaoAPI++Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */; };
+		B5A97D132BE158DC00733884 /* BottomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D122BE158DC00733884 /* BottomTabBarController.swift */; };
+		B5A97D172BE15A6700733884 /* BookLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D162BE15A6700733884 /* BookLogViewController.swift */; };
+		B5A97D192BE15AA600733884 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D182BE15AA600733884 /* SearchViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +35,9 @@
 		B5A97D092BE14C3D00733884 /* SearchBookModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBookModel.swift; sourceTree = "<group>"; };
 		B5A97D0B2BE1518000733884 /* KakaoPlist.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KakaoPlist.plist; sourceTree = "<group>"; };
 		B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KakaoAPI++Bundle.swift"; sourceTree = "<group>"; };
+		B5A97D122BE158DC00733884 /* BottomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomTabBarController.swift; sourceTree = "<group>"; };
+		B5A97D162BE15A6700733884 /* BookLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookLogViewController.swift; sourceTree = "<group>"; };
+		B5A97D182BE15AA600733884 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,12 +72,12 @@
 		B5A97CE82BE140F600733884 /* BookLog */ = {
 			isa = PBXGroup;
 			children = (
-				B5A97D0F2BE1530900733884 /* Resource */,
 				B5A97D082BE14C2800733884 /* Model */,
 				B5A97D002BE149D200733884 /* Network */,
+				B5A97D102BE158A200733884 /* Presentation */,
+				B5A97D0F2BE1530900733884 /* Resource */,
 				B5A97CE92BE140F600733884 /* AppDelegate.swift */,
 				B5A97CEB2BE140F600733884 /* SceneDelegate.swift */,
-				B5A97CED2BE140F600733884 /* ViewController.swift */,
 				B5A97CF22BE140F600733884 /* BookLog.xcdatamodeld */,
 			);
 			path = BookLog;
@@ -102,6 +108,41 @@
 				B5A97D0D2BE1525400733884 /* KakaoAPI++Bundle.swift */,
 			);
 			path = Resource;
+			sourceTree = "<group>";
+		};
+		B5A97D102BE158A200733884 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D152BE15A4C00733884 /* BookLog */,
+				B5A97D142BE15A0800733884 /* Search */,
+				B5A97D112BE158C700733884 /* BottomTabBar */,
+				B5A97CED2BE140F600733884 /* ViewController.swift */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		B5A97D112BE158C700733884 /* BottomTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D122BE158DC00733884 /* BottomTabBarController.swift */,
+			);
+			path = BottomTabBar;
+			sourceTree = "<group>";
+		};
+		B5A97D142BE15A0800733884 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D182BE15AA600733884 /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		B5A97D152BE15A4C00733884 /* BookLog */ = {
+			isa = PBXGroup;
+			children = (
+				B5A97D162BE15A6700733884 /* BookLogViewController.swift */,
+			);
+			path = BookLog;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,11 +222,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A97D192BE15AA600733884 /* SearchViewController.swift in Sources */,
 				B5A97D0E2BE1525400733884 /* KakaoAPI++Bundle.swift in Sources */,
 				B5A97CEE2BE140F600733884 /* ViewController.swift in Sources */,
 				B5A97D022BE14A0200733884 /* BookAPIManager.swift in Sources */,
 				B5A97CF42BE140F600733884 /* BookLog.xcdatamodeld in Sources */,
+				B5A97D132BE158DC00733884 /* BottomTabBarController.swift in Sources */,
 				B5A97CEA2BE140F600733884 /* AppDelegate.swift in Sources */,
+				B5A97D172BE15A6700733884 /* BookLogViewController.swift in Sources */,
 				B5A97D0A2BE14C3D00733884 /* SearchBookModel.swift in Sources */,
 				B5A97CEC2BE140F600733884 /* SceneDelegate.swift in Sources */,
 			);
