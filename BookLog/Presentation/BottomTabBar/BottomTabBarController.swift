@@ -24,7 +24,9 @@ class BottomTabBarController: UITabBarController{
     // 탭 바 설정
     func setTabBar(){
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 0)
-        BLogVC.tabBarItem = UITabBarItem(title: "BLog", image: UIImage(systemName: "person"), tag: 1)
+        searchVC.tabBarItem.selectedImage = UIImage(systemName: "magnifyingglass.circle.fill")
+        BLogVC.tabBarItem = UITabBarItem(title: "BLog", image: UIImage(systemName: "book.pages"), tag: 1)
+        BLogVC.tabBarItem.selectedImage = UIImage(systemName: "book.pages.fill")
         // 탭 바 배경색 설정
         UITabBar.appearance().backgroundColor = UIColor.white
         
@@ -37,7 +39,7 @@ class BottomTabBarController: UITabBarController{
         tabBar.layer.masksToBounds = true
         
         // 탭 바 아이템 텍스트를 bold로 설정
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 13)]
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15)]
         UITabBarItem.appearance().setTitleTextAttributes(attributes, for: .normal)
     }
     
