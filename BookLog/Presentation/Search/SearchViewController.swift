@@ -17,8 +17,10 @@ class SearchViewController: UIViewController{
         $0.obscuresBackgroundDuringPresentation = true
     }
     
+    let searchListTableView = UITableView()
+    
     var pageAble: Meta?
-    var searchBookModel: [Book] = []
+    var searchBookResult: [Book] = []
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -30,7 +32,10 @@ class SearchViewController: UIViewController{
         super.viewDidLoad()
         view.backgroundColor = .gray
         searchController.searchResultsUpdater = self
+        searchListTableView.delegate = self
+        searchListTableView.dataSource = self
         setupNavigation()
+        setupLayout()
     }
     
     func setupNavigation(){
@@ -39,6 +44,16 @@ class SearchViewController: UIViewController{
         
         navigationController?.navigationBar.backgroundColor = .white
         self.navigationItem.searchController = searchController
+    }
+    
+    func setupLayout(){
+        view.addSubview(searchListTableView)
+        searchListTableView.snp.makeConstraints{
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
     
     func changeStatusBarBgColor(bgColor: UIColor?) {
@@ -73,13 +88,34 @@ extension SearchViewController: UISearchResultsUpdating{
             case .success(let value):
                 print("Get Search Book Data")
                 self.pageAble = value.meta
-                self.searchBookModel = value.documents
-                print(self.searchBookModel.count)
+                self.searchBookResult = value.documents
+                DispatchQueue.main.async {
+                    self.searchListTableView.reloadData()
+                }
+                print(self.searchBookResult.count)
             case .failure(let error):
                 print(error)
             }
         }
         print("searching...\(searchText)")
     }
+    
 }
 
+extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchBookResult.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchListCell.identifier) as? SearchListCell else {
+            return UITableViewCell()
+        }
+        
+        cell.title.text = searchBookResult[indexPath.row].title
+        
+        return cell
+    }
+    
+    
+}
