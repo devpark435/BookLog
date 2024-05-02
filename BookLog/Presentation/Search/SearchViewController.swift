@@ -102,6 +102,7 @@ class SearchViewController: UIViewController{
     }
     
 }
+
 extension SearchViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
@@ -110,6 +111,7 @@ extension SearchViewController: UISearchBarDelegate {
         fetchSearchData()
     }
 }
+
 extension SearchViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         guard let esearchText = searchController.searchBar.text else { return }
