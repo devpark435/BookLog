@@ -12,7 +12,7 @@ import Kingfisher
 
 class SearchViewController: UIViewController{
     
-    let searchController = UISearchController().then {
+    let searchController = UISearchController(searchResultsController: nil).then {
         $0.searchBar.placeholder = "책 제목, 저자, 출판사를 검색하세요"
         $0.obscuresBackgroundDuringPresentation = true
     }
@@ -34,6 +34,7 @@ class SearchViewController: UIViewController{
         searchController.searchResultsUpdater = self
         searchListTableView.delegate = self
         searchListTableView.dataSource = self
+        searchListTableView.register(SearchListCell.self, forCellReuseIdentifier: SearchListCell.identifier)
         setupNavigation()
         setupLayout()
     }
@@ -109,13 +110,17 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchListCell.identifier) as? SearchListCell else {
+            print("Search Cell Load Error")
             return UITableViewCell()
         }
         
-        cell.title.text = searchBookResult[indexPath.row].title
+        cell.configureCell(book: searchBookResult[indexPath.row])
         
         return cell
     }
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("Select Row Data \(searchBookResult[indexPath.row])")
+    }
 }
+
