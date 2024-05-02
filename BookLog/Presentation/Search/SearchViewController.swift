@@ -19,8 +19,12 @@ class SearchViewController: UIViewController{
     
     let searchListTableView = UITableView()
     
+    var page: Int = 1
+    var searchText: String = ""
+    
     var pageAble: Meta?
     var searchBookResult: [Book] = []
+    var keyword: [String] = []
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -32,6 +36,7 @@ class SearchViewController: UIViewController{
         super.viewDidLoad()
         view.backgroundColor = .gray
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         searchListTableView.delegate = self
         searchListTableView.dataSource = self
         searchListTableView.register(SearchListCell.self, forCellReuseIdentifier: SearchListCell.identifier)
@@ -54,6 +59,23 @@ class SearchViewController: UIViewController{
             $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
             $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+    }
+    
+    func fetchSearchData(){
+        BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: 1) { result in
+            switch result{
+            case .success(let value):
+                print("Get Search Book Data")
+                self.pageAble = value.meta
+                self.searchBookResult = value.documents
+                DispatchQueue.main.async {
+                    self.searchListTableView.reloadData()
+                }
+                print(self.searchBookResult.count)
+            case .failure(let error):
+                print(error)
+            }
         }
     }
     
@@ -80,27 +102,27 @@ class SearchViewController: UIViewController{
     }
     
 }
-
+extension SearchViewController: UISearchBarDelegate {
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        self.searchText = searchText
+        print("Get Search Text : \(self.searchText)")
+        fetchSearchData()
+    }
+}
 extension SearchViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-        BookAPIManager.shared.searchBookData(esearchText: searchText) { result in
+        guard let esearchText = searchController.searchBar.text else { return }
+        BookAPIManager.shared.searchBookData(esearchText: esearchText, page: 1) { result in
             switch result{
             case .success(let value):
-                print("Get Search Book Data")
-                self.pageAble = value.meta
-                self.searchBookResult = value.documents
-                DispatchQueue.main.async {
-                    self.searchListTableView.reloadData()
-                }
-                print(self.searchBookResult.count)
+                self.keyword = value.documents.filter({ $0.title.hasPrefix(esearchText) }).map({ $0.title })
+                print(self.keyword)
             case .failure(let error):
                 print(error)
             }
         }
-        print("searching...\(searchText)")
     }
-    
 }
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
@@ -121,6 +143,30 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Select Row Data \(searchBookResult[indexPath.row])")
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
+        if indexPath.row == searchBookResult.count - 1{
+            guard let pageAble = self.pageAble else { return }
+            if pageAble.isEnd{
+                print("End of Search")
+                return
+            }
+            self.page += 1
+            BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: self.page) { result in
+                switch result{
+                case .success(let value):
+                    self.pageAble = value.meta
+                    self.searchBookResult += value.documents
+                    print("Get More Search Book Data")
+                    DispatchQueue.main.async {
+                        self.searchListTableView.reloadData()
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
     }
 }
 
