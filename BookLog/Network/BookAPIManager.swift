@@ -15,15 +15,16 @@ class BookAPIManager{
     
     private init(){}
     
-    func searchBookData(esearchText: String, completion: @escaping (Result<SearchBookModel, Error>) -> Void){
+    func searchBookData(esearchText: String, page: Int, completion: @escaping (Result<SearchBookModel, Error>) -> Void){
         let url = "https://dapi.kakao.com/v3/search/book"
         
         let headers : HTTPHeaders = [
             "Authorization" : "KakaoAK \(REST_API_KEY)"
         ]
         
-        let parameters : [String: String] = [
-            "query": esearchText
+        let parameters : [String: Any] = [
+            "query": esearchText,
+            "page": page
         ]
         
         AF.request(url, method: .get, parameters: parameters, headers: headers).validate().responseDecodable(of: SearchBookModel.self) { response in
