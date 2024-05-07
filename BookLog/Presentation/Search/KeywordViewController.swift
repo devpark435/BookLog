@@ -15,9 +15,11 @@ class KeywordViewController: UIViewController{
     
     let keywordTableView = UITableView()
     
+    var searchViewController: SearchViewController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .green
+        view.backgroundColor = .white
         
         setupTableView()
         setupLayout()
@@ -58,6 +60,12 @@ extension KeywordViewController: UITableViewDataSource{
 
 extension KeywordViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected")
+        let selectedText = keywordSearchItems[indexPath.row]
+        searchViewController?.searchText = selectedText
+        searchViewController?.refetchSearchData()
+        print("selectedText: \(selectedText) = \(searchViewController?.searchText)")
+        
+        // 검색 결과 화면으로 돌아가기
+        searchViewController?.navigationController?.popViewController(animated: true)
     }
 }

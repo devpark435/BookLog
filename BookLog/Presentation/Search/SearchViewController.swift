@@ -11,8 +11,11 @@ import SnapKit
 import Kingfisher
 
 class SearchViewController: UIViewController{
-    
-    let searchController = UISearchController(searchResultsController: KeywordViewController()).then {
+    lazy var keywordViewController = KeywordViewController().then{
+        $0.searchViewController = self
+    }
+
+    lazy var searchController = UISearchController(searchResultsController: keywordViewController).then {
         $0.searchBar.placeholder = "책 제목, 저자, 출판사를 검색하세요"
         $0.obscuresBackgroundDuringPresentation = true
     }
@@ -34,7 +37,7 @@ class SearchViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .gray
+        view.backgroundColor = .white
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchListTableView.delegate = self
@@ -112,20 +115,12 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
-//extension SearchViewController: UISearchResultsUpdating{
-//    func updateSearchResults(for searchController: UISearchController) {
-//        guard let esearchText = searchController.searchBar.text else { return }
-//        BookAPIManager.shared.searchKeywordData(esearchText: esearchText) { result in
-//            switch result{
-//            case .success(let value):
-//                self.keyword = value.documents.filter({ $0.title.contains(esearchText) }).map({ $0.title })
-//                print(self.keyword)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-//    }
-//}
+extension SearchViewController {
+    func refetchSearchData() {
+        searchController.searchBar.text = searchText
+        fetchSearchData()
+    }
+}
 
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
