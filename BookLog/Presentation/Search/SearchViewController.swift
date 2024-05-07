@@ -32,13 +32,13 @@ class SearchViewController: UIViewController{
     var searchBookResult: [Book] = []
     var keyword: [String] = []
     
-    let filterOptions = ["제목", "저자"]
+    let filterOptions = ["제목", "저자", "출판사"]
     var selectedFilterOption = "제목" {
         didSet {
             updateSearchBarPlaceholder()
         }
     }
-    var filterTarget = ""
+    var filterTarget = "title"
     
     // MARK: - Life Cycle
     
@@ -153,7 +153,7 @@ class SearchViewController: UIViewController{
     // MARK: - Fetch Data
     
     func fetchSearchData(){
-        BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: 1) { result in
+        BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: 1, searchOption: self.filterTarget) { result in
             switch result{
             case .success(let value):
                 print("Get Search Book Data")
@@ -193,20 +193,27 @@ extension SearchViewController: UISearchResultsUpdating {
         guard let searchText = searchController.searchBar.text else { return }
         
         if let viewController = searchController.searchResultsController as? KeywordViewController {
-            viewController.updateSuggestedSearchTerms(with: searchText)
+            viewController.updateSuggestedSearchTerms(with: searchText, searchOption: self.filterTarget)
         }
     }
 }
 
 extension KeywordViewController {
-    func updateSuggestedSearchTerms(with searchText: String) {
+    func updateSuggestedSearchTerms(with searchText: String, searchOption: String) {
         // 검색어를 기반으로 추천 검색어 데이터 업데이트
-        BookAPIManager.shared.searchKeywordData(esearchText: searchText) { result in
+        BookAPIManager.shared.searchKeywordData(esearchText: searchText, searchOption: searchOption) { result in
             switch result {
             case .success(let value):
-                self.keywordSearchItems = value.documents
-                    .filter({ $0.title.contains(searchText) })
-                    .map({ $0.title })
+                if searchOption == "title" {
+                    self.keywordSearchItems = value.documents
+                        .map({ $0.title })
+                } else if searchOption == "person" {
+                    self.keywordSearchItems = value.documents
+                        .map({ $0.authors.joined(separator: ", ") })
+                } else {
+                    self.keywordSearchItems = value.documents
+                        .map({ $0.publisher })
+                }
                 
                 DispatchQueue.main.async {
                     self.keywordTableView.reloadData()
@@ -249,7 +256,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
                 return
             }
             self.page += 1
-            BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: self.page) { result in
+            BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: self.page, searchOption: self.filterTarget) { result in
                 switch result{
                 case .success(let value):
                     self.pageAble = value.meta
