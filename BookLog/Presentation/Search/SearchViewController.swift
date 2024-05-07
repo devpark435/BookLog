@@ -11,12 +11,15 @@ import SnapKit
 import Kingfisher
 
 class SearchViewController: UIViewController{
+    
+    // MARK: - UI Components
+    
     lazy var keywordViewController = KeywordViewController().then{
         $0.searchViewController = self
     }
-
+    
     lazy var searchController = UISearchController(searchResultsController: keywordViewController).then {
-        $0.searchBar.placeholder = "책 제목, 저자, 출판사를 검색하세요"
+        $0.searchBar.placeholder = "\(selectedFilterOption)을(를) 검색하세요"
         $0.obscuresBackgroundDuringPresentation = true
     }
     
@@ -28,6 +31,16 @@ class SearchViewController: UIViewController{
     var pageAble: Meta?
     var searchBookResult: [Book] = []
     var keyword: [String] = []
+    
+    let filterOptions = ["제목", "저자"]
+    var selectedFilterOption = "제목" {
+        didSet {
+            updateSearchBarPlaceholder()
+        }
+    }
+    var filterTarget = ""
+    
+    // MARK: - Life Cycle
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -45,7 +58,55 @@ class SearchViewController: UIViewController{
         searchListTableView.register(SearchListCell.self, forCellReuseIdentifier: SearchListCell.identifier)
         setupNavigation()
         setupLayout()
+        setupFilterButton()
     }
+    
+    // MARK: - SearchFilter
+    
+    func setupFilterButton() {
+        let filterButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(showFilterOptions))
+        filterButton.tintColor = .darkGray
+        navigationItem.rightBarButtonItem = filterButton
+    }
+    
+    @objc func showFilterOptions() {
+        let alertController = UIAlertController(title: "검색 필터", message: nil, preferredStyle: .actionSheet)
+        
+        for option in filterOptions {
+            let action = UIAlertAction(title: option, style: .default) { [weak self] _ in
+                self?.selectedFilterOption = option
+                self?.performSearch()
+            }
+            alertController.addAction(action)
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func performSearch() {
+        switch selectedFilterOption {
+        case "제목":
+            filterTarget = "title"
+            print(self.filterTarget)
+        case "저자":
+            filterTarget = "person"
+            print(self.filterTarget)
+        case "출판사":
+            filterTarget = "publisher"
+            print(self.filterTarget)
+        default:
+            break
+        }
+    }
+    
+    func updateSearchBarPlaceholder() {
+        searchController.searchBar.placeholder = "\(selectedFilterOption)을(를) 검색하세요"
+    }
+    
+    // MARK: - Navigation
     
     func setupNavigation(){
         self.navigationItem.title = "Search"
@@ -55,6 +116,8 @@ class SearchViewController: UIViewController{
         self.navigationItem.searchController = searchController
     }
     
+    // MARK: - Layout
+    
     func setupLayout(){
         view.addSubview(searchListTableView)
         searchListTableView.snp.makeConstraints{
@@ -62,23 +125,6 @@ class SearchViewController: UIViewController{
             $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
             $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
-    }
-    
-    func fetchSearchData(){
-        BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: 1) { result in
-            switch result{
-            case .success(let value):
-                print("Get Search Book Data")
-                self.pageAble = value.meta
-                self.searchBookResult = value.documents
-                DispatchQueue.main.async {
-                    self.searchListTableView.reloadData()
-                }
-                print(self.searchBookResult.count)
-            case .failure(let error):
-                print(error)
-            }
         }
     }
     
@@ -104,7 +150,27 @@ class SearchViewController: UIViewController{
         }
     }
     
+    // MARK: - Fetch Data
+    
+    func fetchSearchData(){
+        BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: 1) { result in
+            switch result{
+            case .success(let value):
+                print("Get Search Book Data")
+                self.pageAble = value.meta
+                self.searchBookResult = value.documents
+                DispatchQueue.main.async {
+                    self.searchListTableView.reloadData()
+                }
+                print(self.searchBookResult.count)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 }
+
+// MARK: - keyword Search
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -125,7 +191,7 @@ extension SearchViewController {
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
-
+        
         if let viewController = searchController.searchResultsController as? KeywordViewController {
             viewController.updateSuggestedSearchTerms(with: searchText)
         }
@@ -152,6 +218,8 @@ extension KeywordViewController {
         }
     }
 }
+
+// // MARK: - TableView Delegate, DataSource
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
