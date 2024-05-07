@@ -12,7 +12,7 @@ import Kingfisher
 
 class SearchViewController: UIViewController{
     
-    let searchController = UISearchController(searchResultsController: nil).then {
+    let searchController = UISearchController(searchResultsController: KeywordViewController()).then {
         $0.searchBar.placeholder = "책 제목, 저자, 출판사를 검색하세요"
         $0.obscuresBackgroundDuringPresentation = true
     }
@@ -112,16 +112,47 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
-extension SearchViewController: UISearchResultsUpdating{
+//extension SearchViewController: UISearchResultsUpdating{
+//    func updateSearchResults(for searchController: UISearchController) {
+//        guard let esearchText = searchController.searchBar.text else { return }
+//        BookAPIManager.shared.searchKeywordData(esearchText: esearchText) { result in
+//            switch result{
+//            case .success(let value):
+//                self.keyword = value.documents.filter({ $0.title.contains(esearchText) }).map({ $0.title })
+//                print(self.keyword)
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
+//    }
+//}
+
+extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let esearchText = searchController.searchBar.text else { return }
-        BookAPIManager.shared.searchBookData(esearchText: esearchText, page: 1) { result in
-            switch result{
+        guard let searchText = searchController.searchBar.text else { return }
+
+        if let viewController = searchController.searchResultsController as? KeywordViewController {
+            viewController.updateSuggestedSearchTerms(with: searchText)
+        }
+    }
+}
+
+extension KeywordViewController {
+    func updateSuggestedSearchTerms(with searchText: String) {
+        // 검색어를 기반으로 추천 검색어 데이터 업데이트
+        BookAPIManager.shared.searchKeywordData(esearchText: searchText) { result in
+            switch result {
             case .success(let value):
-                self.keyword = value.documents.filter({ $0.title.hasPrefix(esearchText) }).map({ $0.title })
-                print(self.keyword)
+                self.keywordSearchItems = value.documents
+                    .filter({ $0.title.contains(searchText) })
+                    .map({ $0.title })
+                
+                DispatchQueue.main.async {
+                    self.keywordTableView.reloadData()
+                }
+                
             case .failure(let error):
-                print(error)
+                print("실시간 검색어 추천 에러 \(error)")
             }
         }
     }
