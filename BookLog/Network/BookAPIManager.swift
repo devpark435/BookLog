@@ -15,7 +15,7 @@ class BookAPIManager{
     
     private init(){}
     
-    func searchBookData(esearchText: String, page: Int, completion: @escaping (Result<SearchBookModel, Error>) -> Void){
+    func searchBookData(esearchText: String, page: Int, searchOption: String, completion: @escaping (Result<SearchBookModel, Error>) -> Void){
         let url = "https://dapi.kakao.com/v3/search/book"
         
         let headers : HTTPHeaders = [
@@ -24,11 +24,34 @@ class BookAPIManager{
         
         let parameters : [String: Any] = [
             "query": esearchText,
-            "page": page
+            "page": page,
+            "target": searchOption
         ]
         
         AF.request(url, method: .get, parameters: parameters, headers: headers).validate().responseDecodable(of: SearchBookModel.self) { response in
             switch response.result{
+            case .success(let value):
+                completion(.success(value))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func searchKeywordData(esearchText: String, searchOption: String?, completion: @escaping (Result<SearchBookModel, Error>) -> Void) {
+        let url = "https://dapi.kakao.com/v3/search/book"
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "KakaoAK \(REST_API_KEY)"
+        ]
+        
+        let parameters: [String: Any] = [
+            "query": esearchText,
+            "target": searchOption
+        ]
+        
+        AF.request(url, method: .get, parameters: parameters, headers: headers).validate().responseDecodable(of: SearchBookModel.self) { response in
+            switch response.result {
             case .success(let value):
                 completion(.success(value))
             case .failure(let error):

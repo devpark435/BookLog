@@ -28,7 +28,7 @@ class BottomTabBarController: UITabBarController{
         BLogVC.tabBarItem = UITabBarItem(title: "BLog", image: UIImage(systemName: "book.pages"), tag: 1)
         BLogVC.tabBarItem.selectedImage = UIImage(systemName: "book.pages.fill")
         // 탭 바 배경색 설정
-        UITabBar.appearance().backgroundColor = UIColor.white
+        UITabBar.appearance().backgroundColor = UIColor.lightGray
         
         // 탭 바 아이템 색상 설정
         UITabBar.appearance().unselectedItemTintColor = UIColor.gray
