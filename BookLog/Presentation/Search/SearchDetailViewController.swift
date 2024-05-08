@@ -44,7 +44,7 @@ class SearchDetailViewController: UIViewController{
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .gray
     }
-
+    
     let contentsLabel = UILabel().then{
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.numberOfLines = 0
@@ -75,6 +75,8 @@ class SearchDetailViewController: UIViewController{
     }
     
     var book: Book?
+    
+    var bookEntity: BookEntityModel?
     
     // MARK: - Life Cycle
     
@@ -177,7 +179,8 @@ class SearchDetailViewController: UIViewController{
     
     @objc func saveButtonTapped() {
         guard let book = book else { return }
-        BookDataManager.shared.saveBook(book: book)
+        let bookEntityModel = BookEntityModel(authors: book.authors.joined(separator: ", "), contents: book.contents, publisher: book.publisher, thumbnail: book.thumbnail, title: book.title, review: nil)
+        BookDataManager.shared.saveBook(book: bookEntityModel)
         dismiss(animated: true, completion: nil)
     }
     
@@ -190,6 +193,8 @@ class SearchDetailViewController: UIViewController{
         authorLabel.text = book.authors.joined(separator: ", ")
         publisherLabel.text = book.publisher
         contentsLabel.text = book.contents
+        
+        bookEntity = BookEntityModel(authors: book.authors.joined(separator: ", "), contents: book.contents, publisher: book.publisher, thumbnail: book.thumbnail, title: book.title, review: nil)
     }
 }
 
