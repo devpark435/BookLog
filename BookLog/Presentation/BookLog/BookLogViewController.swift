@@ -21,6 +21,12 @@ class BookLogViewController: UIViewController{
                 print("추가메뉴 클릭")
             }),
             UIAction(title: "전체 삭제", image: UIImage(systemName: "trash.fill"),attributes: .destructive , handler: { _ in
+                BookDataManager.shared.deleteAllBooks()
+                DispatchQueue.main.async {
+                    self.loadBooks()
+                    self.reviewedBooksCollectionView.reloadData()
+                    self.allBooksCollectionView.reloadData()
+                }
                 print("전체 삭제")
             })
         ]
@@ -55,6 +61,8 @@ class BookLogViewController: UIViewController{
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         loadBooks()
+        reviewedBooksCollectionView.reloadData()
+        allBooksCollectionView.reloadData()
     }
     
     func setupNavigation() {
@@ -71,8 +79,6 @@ class BookLogViewController: UIViewController{
         let books = BookDataManager.shared.fetchBooks()
         reviewedBooks = books.filter { $0.review != nil && !$0.review!.isEmpty }
         allBooks = books
-        reviewedBooksCollectionView.reloadData()
-        allBooksCollectionView.reloadData()
     }
     
     func setupCollectionViews() {
