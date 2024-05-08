@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BottomTabBarController: UITabBarController{
+class BottomTabBarController: UITabBarController, BookLogViewControllerDelegate{
     
     let searchVC = SearchViewController()
     let BLogVC = BookLogViewController()
@@ -15,10 +15,21 @@ class BottomTabBarController: UITabBarController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let controllers = [searchVC, BLogVC]
-        self.viewControllers = controllers.map{UINavigationController(rootViewController: $0)}
+        setupChildViewControllers()
         
         setTabBar()
+    }
+    
+    func setupChildViewControllers() {
+        BLogVC.delegate = self
+        
+        let controllers = [searchVC, BLogVC]
+        self.viewControllers = controllers.map { UINavigationController(rootViewController: $0) }
+    }
+    
+    func bookLogViewControllerDidTapAddButton(_ bookLogViewController: BookLogViewController) {
+        selectedIndex = 0
+        print("Add Button Tapped")
     }
     
     // 탭 바 설정
@@ -44,3 +55,4 @@ class BottomTabBarController: UITabBarController{
     }
     
 }
+

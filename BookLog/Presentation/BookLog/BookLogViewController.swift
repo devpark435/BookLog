@@ -9,7 +9,13 @@ import UIKit
 import Then
 import SnapKit
 
+protocol BookLogViewControllerDelegate: AnyObject {
+    func bookLogViewControllerDidTapAddButton(_ bookLogViewController: BookLogViewController)
+}
+
 class BookLogViewController: UIViewController{
+    
+    weak var delegate: BookLogViewControllerDelegate?
     
     var menu: UIMenu {
         return UIMenu(title: "", image: nil, identifier: nil, options: [], children: menuItems)
@@ -17,8 +23,9 @@ class BookLogViewController: UIViewController{
     
     var menuItems: [UIAction]{
         return[
-            UIAction(title: "추가", image: UIImage(systemName: "bookmark.fill"), handler: { _ in
-                print("추가메뉴 클릭")
+            UIAction(title: "추가", image: UIImage(systemName: "bookmark.fill"), handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.bookLogViewControllerDidTapAddButton(self)
             }),
             UIAction(title: "전체 삭제", image: UIImage(systemName: "trash.fill"),attributes: .destructive , handler: { _ in
                 BookDataManager.shared.deleteAllBooks()
