@@ -177,6 +177,7 @@ class SearchDetailViewController: UIViewController{
     
     @objc func saveButtonTapped() {
         guard let book = book else { return }
+        BookDataManager.shared.saveBook(book: book)
         dismiss(animated: true, completion: nil)
     }
     
