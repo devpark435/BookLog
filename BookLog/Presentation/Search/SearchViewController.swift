@@ -246,6 +246,9 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Select Row Data \(searchBookResult[indexPath.row])")
+        let detailVC = SearchDetailViewController()
+        detailVC.book = searchBookResult[indexPath.row]
+        present(detailVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
