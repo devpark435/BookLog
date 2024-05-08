@@ -77,4 +77,37 @@ class BookDataManager{
             return []
         }
     }
+    
+    // Delete
+    func deleteBook(book: BookEntityModel) {
+        let managedContext = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "BookEntity")
+        fetchRequest.predicate = NSPredicate(format: "title == %@", book.title)
+        
+        do {
+            let bookObjects = try managedContext.fetch(fetchRequest)
+            for bookObject in bookObjects {
+                managedContext.delete(bookObject)
+            }
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not delete. \(error), \(error.userInfo)")
+        }
+    }
+    
+    // Delete All
+    func deleteAllBooks() {
+        let managedContext = persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "BookEntity")
+        
+        do {
+            let bookObjects = try managedContext.fetch(fetchRequest)
+            for bookObject in bookObjects {
+                managedContext.delete(bookObject)
+            }
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not delete all. \(error), \(error.userInfo)")
+        }
+    }
 }
