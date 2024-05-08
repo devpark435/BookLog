@@ -12,5 +12,6 @@ class BookLogViewController: UIViewController{
         super.viewDidLoad()
         
         view.backgroundColor = .blue
+        BookDataManager.shared.fetchBooks()
     }
 }
