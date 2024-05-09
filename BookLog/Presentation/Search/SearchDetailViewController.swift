@@ -208,17 +208,4 @@ class SearchDetailViewController: UIViewController{
         bookEntity = BookEntityModel(authors: book.authors.joined(separator: ", "), contents: book.contents, publisher: book.publisher, thumbnail: book.thumbnail, title: book.title, review: nil)
     }
 }
-extension UIViewController {
-    func showSaveAlert(for book: BookEntityModel) {
-        let alertTitle = "책을 담았습니다!"
-        let alertMessage = "\(book.title) 책이 성공적으로 담겼습니다."
-        
-        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
-        
-        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
-        
-        alertController.addAction(okAction)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-}
+
