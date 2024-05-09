@@ -320,16 +320,10 @@ extension SearchViewController {
         let defaults = UserDefaults.standard
         
         // UserDefaults에서 기존 검색 결과 가져오기
-        var searchResults = defaults.array(forKey: "SearchResults") as? [[String: Any]] ?? []
+        var searchResults = defaults.data(forKey: "SearchResults").flatMap { try? JSONDecoder().decode([Book].self, from: $0) } ?? []
         
         // 새로운 검색 결과 추가
-        let newSearchResult: [String: Any] = [
-            "title": book.title,
-            "authors": book.authors,
-            "publisher": book.publisher,
-            "thumbnail": book.thumbnail
-        ]
-        searchResults.append(newSearchResult)
+        searchResults.append(book)
         
         // 최대 10개까지 유지하기 위해 오래된 항목 제거
         if searchResults.count > 10 {
@@ -337,7 +331,23 @@ extension SearchViewController {
         }
         
         // 업데이트된 검색 결과를 UserDefaults에 저장
-        defaults.set(searchResults, forKey: "SearchResults")
+        if let data = try? JSONEncoder().encode(searchResults) {
+            defaults.set(data, forKey: "SearchResults")
+            printSavedSearchResults()
+        }
+    }
+    
+    func printSavedSearchResults() {
+        let defaults = UserDefaults.standard
+        if let data = defaults.data(forKey: "SearchResults"),
+           let savedSearchResults = try? JSONDecoder().decode([Book].self, from: data) {
+            print("Saved Search Results:")
+            for result in savedSearchResults {
+                print(result)
+            }
+        } else {
+            print("No saved search results found.")
+        }
     }
 }
 
