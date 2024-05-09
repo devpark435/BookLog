@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B54ABF042BEBBA05002E89DC /* BookEntityModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ABF032BEBBA05002E89DC /* BookEntityModel.swift */; };
+		B54ABF062BEBCE0C002E89DC /* BookCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ABF052BEBCE0C002E89DC /* BookCollectionCell.swift */; };
 		B5A97CEA2BE140F600733884 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97CE92BE140F600733884 /* AppDelegate.swift */; };
 		B5A97CEC2BE140F600733884 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97CEB2BE140F600733884 /* SceneDelegate.swift */; };
 		B5A97CF42BE140F600733884 /* BookLog.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B5A97CF22BE140F600733884 /* BookLog.xcdatamodeld */; };
@@ -25,9 +27,13 @@
 		B5A97D242BE22FA600733884 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B5A97D232BE22FA600733884 /* Kingfisher */; };
 		B5A97D262BE25B2100733884 /* SearchListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D252BE25B2100733884 /* SearchListCell.swift */; };
 		B5A97D282BEA54D900733884 /* KeywordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D272BEA54D900733884 /* KeywordViewController.swift */; };
+		B5A97D2B2BEA789A00733884 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D2A2BEA789A00733884 /* SearchDetailViewController.swift */; };
+		B5A97D2D2BEBA06900733884 /* BookDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A97D2C2BEBA06900733884 /* BookDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B54ABF032BEBBA05002E89DC /* BookEntityModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookEntityModel.swift; sourceTree = "<group>"; };
+		B54ABF052BEBCE0C002E89DC /* BookCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCollectionCell.swift; sourceTree = "<group>"; };
 		B5A97CE62BE140F600733884 /* BookLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A97CE92BE140F600733884 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B5A97CEB2BE140F600733884 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +49,8 @@
 		B5A97D182BE15AA600733884 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		B5A97D252BE25B2100733884 /* SearchListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchListCell.swift; sourceTree = "<group>"; };
 		B5A97D272BEA54D900733884 /* KeywordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeywordViewController.swift; sourceTree = "<group>"; };
+		B5A97D2A2BEA789A00733884 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
+		B5A97D2C2BEBA06900733884 /* BookDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +111,8 @@
 			isa = PBXGroup;
 			children = (
 				B5A97D092BE14C3D00733884 /* SearchBookModel.swift */,
+				B5A97D2C2BEBA06900733884 /* BookDataManager.swift */,
+				B54ABF032BEBBA05002E89DC /* BookEntityModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -142,6 +152,7 @@
 				B5A97D182BE15AA600733884 /* SearchViewController.swift */,
 				B5A97D252BE25B2100733884 /* SearchListCell.swift */,
 				B5A97D272BEA54D900733884 /* KeywordViewController.swift */,
+				B5A97D2A2BEA789A00733884 /* SearchDetailViewController.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -150,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				B5A97D162BE15A6700733884 /* BookLogViewController.swift */,
+				B54ABF052BEBCE0C002E89DC /* BookCollectionCell.swift */,
 			);
 			path = BookLog;
 			sourceTree = "<group>";
@@ -238,15 +250,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5A97D192BE15AA600733884 /* SearchViewController.swift in Sources */,
+				B54ABF042BEBBA05002E89DC /* BookEntityModel.swift in Sources */,
+				B54ABF062BEBCE0C002E89DC /* BookCollectionCell.swift in Sources */,
 				B5A97D262BE25B2100733884 /* SearchListCell.swift in Sources */,
 				B5A97D0E2BE1525400733884 /* KakaoAPI++Bundle.swift in Sources */,
 				B5A97D022BE14A0200733884 /* BookAPIManager.swift in Sources */,
 				B5A97CF42BE140F600733884 /* BookLog.xcdatamodeld in Sources */,
 				B5A97D282BEA54D900733884 /* KeywordViewController.swift in Sources */,
 				B5A97D132BE158DC00733884 /* BottomTabBarController.swift in Sources */,
+				B5A97D2D2BEBA06900733884 /* BookDataManager.swift in Sources */,
 				B5A97CEA2BE140F600733884 /* AppDelegate.swift in Sources */,
 				B5A97D172BE15A6700733884 /* BookLogViewController.swift in Sources */,
 				B5A97D0A2BE14C3D00733884 /* SearchBookModel.swift in Sources */,
+				B5A97D2B2BEA789A00733884 /* SearchDetailViewController.swift in Sources */,
 				B5A97CEC2BE140F600733884 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

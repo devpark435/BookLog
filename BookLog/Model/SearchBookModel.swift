@@ -37,9 +37,10 @@ struct Book: Decodable {
     let title: String
     let translators: [String]
     let url: String
+    let review: String?
     
     enum CodingKeys: String, CodingKey {
-        case authors, contents, datetime, isbn, price, publisher, status, thumbnail, title, translators, url
+        case authors, contents, datetime, isbn, price, publisher, status, thumbnail, title, translators, url, review
         case salePrice = "sale_price"
     }
 }

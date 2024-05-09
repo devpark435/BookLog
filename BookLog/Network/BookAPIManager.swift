@@ -38,7 +38,7 @@ class BookAPIManager{
         }
     }
     
-    func searchKeywordData(esearchText: String, searchOption: String?, completion: @escaping (Result<SearchBookModel, Error>) -> Void) {
+    func searchKeywordData(esearchText: String, searchOption: String, completion: @escaping (Result<SearchBookModel, Error>) -> Void) {
         let url = "https://dapi.kakao.com/v3/search/book"
         
         let headers: HTTPHeaders = [
