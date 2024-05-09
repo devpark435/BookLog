@@ -12,6 +12,8 @@ import Kingfisher
 
 class SearchViewController: UIViewController{
     
+    let searchDetailViewController = SearchDetailViewController()
+    
     // MARK: - UI Components
     
     lazy var keywordViewController = KeywordViewController().then{
@@ -248,6 +250,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
         print("Select Row Data \(searchBookResult[indexPath.row])")
         let detailVC = SearchDetailViewController()
         detailVC.book = searchBookResult[indexPath.row]
+        detailVC.delegate = self
         present(detailVC, animated: true)
     }
     
@@ -276,3 +279,23 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
     }
 }
 
+extension SearchViewController: SearchDetailViewControllerDelegate {
+    func searchDetailViewControllerDidDismiss(_ viewController: SearchDetailViewController) {
+        showBookAlert(for: viewController.book)
+    }
+    
+    func showBookAlert(for book: Book?) {
+        guard let book = book else { return }
+        
+        let alertTitle = "책을 담았습니다!"
+        let alertMessage = "\(book.title) 책이 성공적으로 담겼습니다."
+        
+        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+}

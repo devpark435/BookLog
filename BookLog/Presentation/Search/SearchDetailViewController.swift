@@ -10,7 +10,13 @@ import SnapKit
 import Then
 import Kingfisher
 
+protocol SearchDetailViewControllerDelegate: AnyObject {
+    func searchDetailViewControllerDidDismiss(_ viewController: SearchDetailViewController)
+}
+
 class SearchDetailViewController: UIViewController{
+    
+    weak var delegate: SearchDetailViewControllerDelegate?
     
     // MARK: - UI Components
     
@@ -179,9 +185,14 @@ class SearchDetailViewController: UIViewController{
     
     @objc func saveButtonTapped() {
         guard let book = book else { return }
+        
         let bookEntityModel = BookEntityModel(authors: book.authors.joined(separator: ", "), contents: book.contents, publisher: book.publisher, thumbnail: book.thumbnail, title: book.title, review: nil)
+        
         BookDataManager.shared.saveBook(book: bookEntityModel)
-        dismiss(animated: true, completion: nil)
+        
+        dismiss(animated: true) {
+            self.delegate?.searchDetailViewControllerDidDismiss(self)
+        }
     }
     
     func setupData() {
@@ -197,4 +208,17 @@ class SearchDetailViewController: UIViewController{
         bookEntity = BookEntityModel(authors: book.authors.joined(separator: ", "), contents: book.contents, publisher: book.publisher, thumbnail: book.thumbnail, title: book.title, review: nil)
     }
 }
-
+extension UIViewController {
+    func showSaveAlert(for book: BookEntityModel) {
+        let alertTitle = "책을 담았습니다!"
+        let alertMessage = "\(book.title) 책이 성공적으로 담겼습니다."
+        
+        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+}
