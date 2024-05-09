@@ -30,6 +30,11 @@ class SearchViewController: UIViewController{
         $0.register(SearchListCell.self, forCellWithReuseIdentifier: SearchListCell.identifier)
     }
     
+    let viewHistoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout()).then {
+        $0.backgroundColor = .blue
+        $0.register(ViewHistoryCell.self, forCellWithReuseIdentifier: ViewHistoryCell.identifier)
+    }
+    
     var page: Int = 1
     var searchText: String = ""
     
@@ -124,16 +129,28 @@ class SearchViewController: UIViewController{
     func setupCollectionView() {
         searchResultCollectionView.delegate = self
         searchResultCollectionView.dataSource = self
+        viewHistoryCollectionView.delegate = self
+        viewHistoryCollectionView.dataSource = self
         
         searchResultCollectionView.collectionViewLayout = createCompositionalLayout()
+        viewHistoryCollectionView.collectionViewLayout = createCompositionalLayout()
     }
     
     // MARK: - Layout
     
     func setupLayout(){
+        view.addSubview(viewHistoryCollectionView)
         view.addSubview(searchResultCollectionView)
-        searchResultCollectionView.snp.makeConstraints {
+        
+        viewHistoryCollectionView.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+            $0.height.equalTo(100)
+        }
+        
+        searchResultCollectionView.snp.makeConstraints {
+            $0.top.equalTo(viewHistoryCollectionView.snp.bottom).offset(10)
             $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
             $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
@@ -238,47 +255,98 @@ extension KeywordViewController {
     }
 }
 
-// MARK: - TableView Delegate, DataSource
+// MARK: - CollectionView Delegate, DataSource, Layout
 
 extension SearchViewController {
     func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-            // 아이템 크기 설정
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            
-            // 그룹 크기 설정
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
-            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-            
-            // 섹션 설정
-            let section = NSCollectionLayoutSection(group: group)
-            section.interGroupSpacing = 10
-            section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-            
-            return section
+            switch sectionIndex {
+            case 0:
+                // 검색어 칩 레이아웃
+                let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1.0))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                item.edgeSpacing = NSCollectionLayoutEdgeSpacing(leading: .fixed(10), top: .fixed(10), trailing: .fixed(10), bottom: .fixed(10))
+                
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+                
+                let section = NSCollectionLayoutSection(group: group)
+                section.orthogonalScrollingBehavior = .continuous
+                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+                
+                return section
+                
+            default:
+                // 기존 레이아웃
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
+                let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+                
+                let section = NSCollectionLayoutSection(group: group)
+                section.interGroupSpacing = 10
+                section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+                
+                return section
+            }
         }
         
         return layout
     }
 }
-
-extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension SearchViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2 // 검색어 칩 섹션과 검색 결과 섹션
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return searchBookResult.count
+        switch section {
+        case 0:
+            // 저장된 검색 결과 개수 반환
+            let defaults = UserDefaults.standard
+            if let savedData = defaults.data(forKey: "SearchResults"),
+               let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData) {
+                print("savedSearchResults.count : \(savedSearchResults.count)")
+                return savedSearchResults.count
+            } else {
+                print("저장된 검색 결과가 없습니다.")
+                return 0
+            }
+        default:
+            return searchBookResult.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchListCell.identifier, for: indexPath) as? SearchListCell else {
-            return UICollectionViewCell()
+        switch indexPath.section {
+        case 0:
+            // 검색어 칩 셀 구성
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ViewHistoryCell.identifier, for: indexPath) as? ViewHistoryCell else {
+                print("ViewHistoryCell Error")
+                return UICollectionViewCell()
+            }
+            let defaults = UserDefaults.standard
+            if let savedData = defaults.data(forKey: "SearchResults"),
+               let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData) {
+                if indexPath.item < savedSearchResults.count {
+                    let book = savedSearchResults[indexPath.item]
+                    cell.configure(with: book.title)
+                }
+            }
+            return cell
+        default:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchListCell.identifier, for: indexPath) as? SearchListCell else {
+                return UICollectionViewCell()
+            }
+            let book = searchBookResult[indexPath.item]
+            cell.configureCell(book: book)
+            return cell
         }
-        
-        let book = searchBookResult[indexPath.item]
-        cell.configureCell(book: book)
-        
-        return cell
     }
-    
+}
+
+extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedBook = searchBookResult[indexPath.item]
         saveSearchResult(selectedBook)
@@ -286,6 +354,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let detailVC = SearchDetailViewController()
         detailVC.book = selectedBook
         detailVC.delegate = self
+        
         present(detailVC, animated: true)
     }
     
