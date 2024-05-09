@@ -10,7 +10,7 @@ import SnapKit
 import Kingfisher
 import Then
 
-class SearchListCell: UITableViewCell{
+class SearchListCell: UICollectionViewCell{
         
         static let identifier = "SearchListCell"
         
@@ -55,8 +55,8 @@ class SearchListCell: UITableViewCell{
             $0.textColor = .gray
         }
         
-        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
+        override init(frame: CGRect) {
+            super.init(frame: frame)
             setupUI()
         }
         
