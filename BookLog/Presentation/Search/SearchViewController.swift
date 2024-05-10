@@ -58,6 +58,7 @@ class SearchViewController: UIViewController{
         super.viewWillAppear(animated)
         
         changeStatusBarBgColor(bgColor: UIColor.white)
+        setupLayout()
     }
     
     override func viewDidLoad() {
@@ -67,7 +68,7 @@ class SearchViewController: UIViewController{
         searchController.searchBar.delegate = self
         setupNavigation()
         setupCollectionView()
-        setupLayout()
+//        setupLayout()
         setupFilterButton()
     }
     
@@ -141,21 +142,39 @@ class SearchViewController: UIViewController{
     // MARK: - Layout
     
     func setupLayout(){
-        view.addSubview(viewHistoryCollectionView)
+        view.subviews.forEach { $0.removeFromSuperview() }
+        
         view.addSubview(searchResultCollectionView)
         
-        viewHistoryCollectionView.snp.makeConstraints{
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(15)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-15)
-            $0.height.equalTo(50)
-        }
-        
-        searchResultCollectionView.snp.makeConstraints {
-            $0.top.equalTo(viewHistoryCollectionView.snp.bottom).offset(10)
-            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        // UserDefaults에서 저장된 검색 결과 확인
+        let defaults = UserDefaults.standard
+        if let savedData = defaults.data(forKey: "SearchResults"),
+           let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData),
+           !savedSearchResults.isEmpty {
+            // 저장된 검색 결과가 있는 경우 컬렉션 뷰 표시
+            view.addSubview(viewHistoryCollectionView)
+            
+            viewHistoryCollectionView.snp.makeConstraints{
+                $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(15)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-15)
+                $0.height.equalTo(50)
+            }
+            
+            searchResultCollectionView.snp.makeConstraints {
+                $0.top.equalTo(viewHistoryCollectionView.snp.bottom).offset(10)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            }
+        } else {
+            // 저장된 검색 결과가 없는 경우 searchResultCollectionView만 설정
+            searchResultCollectionView.snp.makeConstraints {
+                $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            }
         }
     }
     
@@ -364,7 +383,11 @@ extension SearchViewController: UICollectionViewDelegate {
             }
         case searchResultCollectionView:
             let selectedBook = searchBookResult[indexPath.item]
+            // 최근 본 책 추가
             saveSearchResult(selectedBook)
+            // 최근 본 책 목록 갱신
+            viewHistoryCollectionView.reloadData()
+            setupLayout()
             
             let detailVC = SearchDetailViewController()
             detailVC.book = selectedBook
