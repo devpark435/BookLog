@@ -24,7 +24,7 @@ struct Meta: Decodable {
     }
 }
 
-struct Book: Decodable {
+struct Book: Codable {
     let authors: [String]
     let contents: String
     let datetime: String

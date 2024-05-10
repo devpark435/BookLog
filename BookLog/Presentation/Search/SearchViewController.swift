@@ -25,7 +25,17 @@ class SearchViewController: UIViewController{
         $0.obscuresBackgroundDuringPresentation = true
     }
     
-    let searchListTableView = UITableView()
+    let searchResultCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout()).then {
+        $0.backgroundColor = .white
+        $0.register(SearchListCell.self, forCellWithReuseIdentifier: SearchListCell.identifier)
+    }
+    
+    let viewHistoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout()).then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 10
+        $0.layer.masksToBounds = true
+        $0.register(ViewHistoryCell.self, forCellWithReuseIdentifier: ViewHistoryCell.identifier)
+    }
     
     var page: Int = 1
     var searchText: String = ""
@@ -48,6 +58,7 @@ class SearchViewController: UIViewController{
         super.viewWillAppear(animated)
         
         changeStatusBarBgColor(bgColor: UIColor.white)
+        setupLayout()
     }
     
     override func viewDidLoad() {
@@ -55,11 +66,9 @@ class SearchViewController: UIViewController{
         view.backgroundColor = .white
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        searchListTableView.delegate = self
-        searchListTableView.dataSource = self
-        searchListTableView.register(SearchListCell.self, forCellReuseIdentifier: SearchListCell.identifier)
         setupNavigation()
-        setupLayout()
+        setupCollectionView()
+//        setupLayout()
         setupFilterButton()
     }
     
@@ -118,15 +127,54 @@ class SearchViewController: UIViewController{
         self.navigationItem.searchController = searchController
     }
     
+    // MARK: - CollectionView
+    
+    func setupCollectionView() {
+        searchResultCollectionView.delegate = self
+        searchResultCollectionView.dataSource = self
+        viewHistoryCollectionView.delegate = self
+        viewHistoryCollectionView.dataSource = self
+        
+        searchResultCollectionView.collectionViewLayout = createSearchResultLayout()
+        viewHistoryCollectionView.collectionViewLayout = createViewHistoryLayout()
+    }
+    
     // MARK: - Layout
     
     func setupLayout(){
-        view.addSubview(searchListTableView)
-        searchListTableView.snp.makeConstraints{
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        view.subviews.forEach { $0.removeFromSuperview() }
+        
+        view.addSubview(searchResultCollectionView)
+        
+        // UserDefaults에서 저장된 검색 결과 확인
+        let defaults = UserDefaults.standard
+        if let savedData = defaults.data(forKey: "SearchResults"),
+           let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData),
+           !savedSearchResults.isEmpty {
+            // 저장된 검색 결과가 있는 경우 컬렉션 뷰 표시
+            view.addSubview(viewHistoryCollectionView)
+            
+            viewHistoryCollectionView.snp.makeConstraints{
+                $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(15)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-15)
+                $0.height.equalTo(50)
+            }
+            
+            searchResultCollectionView.snp.makeConstraints {
+                $0.top.equalTo(viewHistoryCollectionView.snp.bottom).offset(10)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            }
+        } else {
+            // 저장된 검색 결과가 없는 경우 searchResultCollectionView만 설정
+            searchResultCollectionView.snp.makeConstraints {
+                $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+                $0.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
+                $0.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            }
         }
     }
     
@@ -162,7 +210,7 @@ class SearchViewController: UIViewController{
                 self.pageAble = value.meta
                 self.searchBookResult = value.documents
                 DispatchQueue.main.async {
-                    self.searchListTableView.reloadData()
+                    self.searchResultCollectionView.reloadData()
                 }
                 print(self.searchBookResult.count)
             case .failure(let error):
@@ -228,53 +276,197 @@ extension KeywordViewController {
     }
 }
 
-// // MARK: - TableView Delegate, DataSource
+// MARK: - CollectionView Delegate, DataSource, Layout
 
-extension SearchViewController: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchBookResult.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchListCell.identifier) as? SearchListCell else {
-            print("Search Cell Load Error")
-            return UITableViewCell()
+extension SearchViewController {
+    func createSearchResultLayout() -> UICollectionViewCompositionalLayout {
+        // searchResultCollectionView의 CompositionalLayout 생성
+        let layout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
+            // searchResultCollectionView의 레이아웃 구성
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+            
+            let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = 10
+            section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            
+            return section
         }
-        
-        cell.configureCell(book: searchBookResult[indexPath.row])
-        
-        return cell
+        return layout
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Select Row Data \(searchBookResult[indexPath.row])")
-        let detailVC = SearchDetailViewController()
-        detailVC.book = searchBookResult[indexPath.row]
-        detailVC.delegate = self
-        present(detailVC, animated: true)
+    func createViewHistoryLayout() -> UICollectionViewCompositionalLayout {
+        // viewHistoryCollectionView의 CompositionalLayout 생성
+        let layout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
+            // viewHistoryCollectionView의 레이아웃 구성
+            let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            item.edgeSpacing = NSCollectionLayoutEdgeSpacing(leading: .fixed(5), top: .fixed(0), trailing: .fixed(5), bottom: .fixed(0))
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .estimated(100), heightDimension: .fractionalHeight(1.0))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            
+            let section = NSCollectionLayoutSection(group: group)
+            section.orthogonalScrollingBehavior = .continuous
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10)
+            
+            return section
+        }
+        return layout
     }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
-        if indexPath.row == searchBookResult.count - 1{
-            guard let pageAble = self.pageAble else { return }
-            if pageAble.isEnd{
-                print("End of Search")
-                return
+}
+extension SearchViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionView {
+        case viewHistoryCollectionView:
+            // 저장된 검색 결과 개수 반환
+            let defaults = UserDefaults.standard
+            if let savedData = defaults.data(forKey: "SearchResults"),
+               let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData) {
+                print("savedSearchResults.count : \(savedSearchResults.count)")
+                return savedSearchResults.count
+            } else {
+                print("저장된 검색 결과가 없습니다.")
+                return 0
             }
-            self.page += 1
-            BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: self.page, searchOption: self.filterTarget) { result in
-                switch result{
-                case .success(let value):
-                    self.pageAble = value.meta
-                    self.searchBookResult += value.documents
-                    print("Get More Search Book Data")
-                    DispatchQueue.main.async {
-                        self.searchListTableView.reloadData()
-                    }
-                case .failure(let error):
-                    print(error)
+        case searchResultCollectionView:
+            return searchBookResult.count
+        default:
+            return 0
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        switch collectionView {
+        case viewHistoryCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ViewHistoryCell.identifier, for: indexPath) as? ViewHistoryCell else {
+                return UICollectionViewCell()
+            }
+            let defaults = UserDefaults.standard
+            if let savedData = defaults.data(forKey: "SearchResults"),
+               let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData) {
+                let book = savedSearchResults[indexPath.item]
+                cell.configure(with: book.title)
+            }
+            return cell
+        case searchResultCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchListCell.identifier, for: indexPath) as? SearchListCell else {
+                return UICollectionViewCell()
+            }
+            let book = searchBookResult[indexPath.item]
+            cell.configureCell(book: book)
+            return cell
+        default:
+            return UICollectionViewCell()
+        }
+    }
+}
+
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case viewHistoryCollectionView:
+            // 검색어 칩 선택 시
+            let defaults = UserDefaults.standard
+            if let savedData = defaults.data(forKey: "SearchResults"),
+               let savedSearchResults = try? JSONDecoder().decode([Book].self, from: savedData) {
+                if indexPath.item < savedSearchResults.count {
+                    let selectedBook = savedSearchResults[indexPath.item]
+                    let detailVC = SearchDetailViewController()
+                    detailVC.book = selectedBook
+                    detailVC.delegate = self
+                    present(detailVC, animated: true)
                 }
             }
+        case searchResultCollectionView:
+            let selectedBook = searchBookResult[indexPath.item]
+            // 최근 본 책 추가
+            saveSearchResult(selectedBook)
+            // 최근 본 책 목록 갱신
+            viewHistoryCollectionView.reloadData()
+            setupLayout()
+            
+            let detailVC = SearchDetailViewController()
+            detailVC.book = selectedBook
+            detailVC.delegate = self
+            
+            present(detailVC, animated: true)
+        default:
+            return
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case viewHistoryCollectionView:
+            return
+        case searchResultCollectionView:
+            if indexPath.item == searchBookResult.count - 1 {
+                guard let pageAble = self.pageAble else { return }
+                if pageAble.isEnd {
+                    print("End of Search")
+                    return
+                }
+                
+                self.page += 1
+                BookAPIManager.shared.searchBookData(esearchText: self.searchText, page: self.page, searchOption: self.filterTarget) { result in
+                    switch result {
+                    case .success(let value):
+                        self.pageAble = value.meta
+                        self.searchBookResult += value.documents
+                        print("Get More Search Book Data")
+                        DispatchQueue.main.async {
+                            self.searchResultCollectionView.reloadData()
+                        }
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+            }
+        default:
+            return
+        }
+    }
+}
+
+extension SearchViewController {
+    func saveSearchResult(_ book: Book) {
+        let defaults = UserDefaults.standard
+        
+        // UserDefaults에서 기존 검색 결과 가져오기
+        var searchResults = defaults.data(forKey: "SearchResults").flatMap { try? JSONDecoder().decode([Book].self, from: $0) } ?? []
+        
+        // 중복 검사
+        if !searchResults.contains(where: { $0.title == book.title }) {
+            // 중복되지 않은 경우에만 새로운 검색 결과 추가
+            searchResults.append(book)
+            
+            // 최대 10개까지 유지하기 위해 오래된 항목 제거
+            if searchResults.count > 10 {
+                searchResults.removeFirst(searchResults.count - 10)
+            }
+            
+            // 업데이트된 검색 결과를 UserDefaults에 저장
+            if let data = try? JSONEncoder().encode(searchResults) {
+                defaults.set(data, forKey: "SearchResults")
+                printSavedSearchResults()
+            }
+        }
+    }
+    
+    func printSavedSearchResults() {
+        let defaults = UserDefaults.standard
+        if let data = defaults.data(forKey: "SearchResults"),
+           let savedSearchResults = try? JSONDecoder().decode([Book].self, from: data) {
+            print("Saved Search Results:")
+            for result in savedSearchResults {
+                print(result)
+            }
+        } else {
+            print("No saved search results found.")
         }
     }
 }
