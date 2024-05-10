@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BottomTabBarController: UITabBarController{
+class BottomTabBarController: UITabBarController, BookLogViewControllerDelegate{
     
     let searchVC = SearchViewController()
     let BLogVC = BookLogViewController()
@@ -15,10 +15,21 @@ class BottomTabBarController: UITabBarController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let controllers = [searchVC, BLogVC]
-        self.viewControllers = controllers.map{UINavigationController(rootViewController: $0)}
+        setupChildViewControllers()
         
         setTabBar()
+    }
+    
+    func setupChildViewControllers() {
+        BLogVC.delegate = self
+        
+        let controllers = [searchVC, BLogVC]
+        self.viewControllers = controllers.map { UINavigationController(rootViewController: $0) }
+    }
+    
+    func bookLogViewControllerDidTapAddButton(_ bookLogViewController: BookLogViewController) {
+        selectedIndex = 0
+        print("Add Button Tapped")
     }
     
     // 탭 바 설정
@@ -28,7 +39,7 @@ class BottomTabBarController: UITabBarController{
         BLogVC.tabBarItem = UITabBarItem(title: "BLog", image: UIImage(systemName: "book.pages"), tag: 1)
         BLogVC.tabBarItem.selectedImage = UIImage(systemName: "book.pages.fill")
         // 탭 바 배경색 설정
-        UITabBar.appearance().backgroundColor = UIColor.white
+        UITabBar.appearance().backgroundColor = UIColor.lightGray
         
         // 탭 바 아이템 색상 설정
         UITabBar.appearance().unselectedItemTintColor = UIColor.gray
@@ -44,3 +55,4 @@ class BottomTabBarController: UITabBarController{
     }
     
 }
+
