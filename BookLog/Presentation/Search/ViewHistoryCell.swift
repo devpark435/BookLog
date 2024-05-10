@@ -14,8 +14,8 @@ class ViewHistoryCell: UICollectionViewCell {
     static let identifier = "ViewHistoryCell"
     
     let historyLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textColor = .gray
+        $0.font = UIFont.boldSystemFont(ofSize: 15)
+        $0.textColor = .white
     }
     
     override init(frame: CGRect) {
@@ -38,8 +38,8 @@ class ViewHistoryCell: UICollectionViewCell {
         contentView.addSubview(historyLabel)
         
         historyLabel.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.equalToSuperview().offset(20)
+            $0.center.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(10)
         }
     }
     
