@@ -439,18 +439,21 @@ extension SearchViewController {
         // UserDefaults에서 기존 검색 결과 가져오기
         var searchResults = defaults.data(forKey: "SearchResults").flatMap { try? JSONDecoder().decode([Book].self, from: $0) } ?? []
         
-        // 새로운 검색 결과 추가
-        searchResults.append(book)
-        
-        // 최대 10개까지 유지하기 위해 오래된 항목 제거
-        if searchResults.count > 10 {
-            searchResults.removeFirst(searchResults.count - 10)
-        }
-        
-        // 업데이트된 검색 결과를 UserDefaults에 저장
-        if let data = try? JSONEncoder().encode(searchResults) {
-            defaults.set(data, forKey: "SearchResults")
-            printSavedSearchResults()
+        // 중복 검사
+        if !searchResults.contains(where: { $0.title == book.title }) {
+            // 중복되지 않은 경우에만 새로운 검색 결과 추가
+            searchResults.append(book)
+            
+            // 최대 10개까지 유지하기 위해 오래된 항목 제거
+            if searchResults.count > 10 {
+                searchResults.removeFirst(searchResults.count - 10)
+            }
+            
+            // 업데이트된 검색 결과를 UserDefaults에 저장
+            if let data = try? JSONEncoder().encode(searchResults) {
+                defaults.set(data, forKey: "SearchResults")
+                printSavedSearchResults()
+            }
         }
     }
     
